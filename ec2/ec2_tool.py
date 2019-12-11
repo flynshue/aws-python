@@ -28,7 +28,6 @@ def get_ec2_all():
             print("SecurityGroup: {}".format(s['GroupName']))
         print("AZ: {}\n".format(i.placement['AvailabilityZone']))
         
-        
 
 def get_ec2(ec2_id):
     ec2 = boto3.resource('ec2')
