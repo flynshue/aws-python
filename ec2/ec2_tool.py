@@ -53,7 +53,6 @@ def term_ec2():
 
 
 if args.list == True:
-    # get_instances()
     get_ec2_all()
 
 if args.start != None:
