@@ -10,31 +10,32 @@ args = parser.parse_args()
 
 client = boto3.client('ec2')
 
-def get_instances():
-    response = client.describe_instances()
-    instances = response['Reservations']
+def get_ec2_all():
+    ec2 = boto3.resource('ec2')
+    instances = ec2.instances.all()
     title = "ec2 instances".upper()
     print(title)
-    print(len(title) * "*")
+    print(len(title)* "*")
     for i in instances:
-        instance = i['Instances'][0]
-        print("InstanceId: {}".format(instance['InstanceId']))
-        for t in instance['Tags']:
+        for t in i.tags:
             print("{}: {}".format(t['Key'], t['Value']))
-        print("InstanceType: {}".format(instance['InstanceType']))
-        print("AZ: {}".format(instance['Placement']['AvailabilityZone']))
-        print("PublicDnsName: {}".format(instance['PublicDnsName']))
-        for s in instance['SecurityGroups']:
-            print("SecuirtyGroup: {}".format(s['GroupName']))
-        print("State: {}".format(instance['State']['Name']))
-        print("")
+        print("InstanceId: {}".format(i.instance_id))
+        print("InstanceType: {}".format(i.instance_type))
+        print("Status: {}".format(i.state['Name']))
+        print("PublicDnsName: {}".format(i.public_dns_name))
+        print("PublicIpAddress: {}".format(i.public_ip_address))
+        for s in i.security_groups:
+            print("SecurityGroup: {}".format(s['GroupName']))
+        print("AZ: {}\n".format(i.placement['AvailabilityZone']))
+        
+        
 
 def get_ec2(ec2_id):
     ec2 = boto3.resource('ec2')
     instance = ec2.Instance(ec2_id)
-    print("InstanceId: {}".format(instance.instance_id))
     for t in instance.tags:
         print("{}: {}".format(t['Key'], t['Value']))
+    print("InstanceId: {}".format(instance.instance_id))
     print("Status: {}".format(instance.state['Name']))
     print("PublicDnsName: {}".format(instance.public_dns_name))
     print("PublicIpAddress: {}".format(instance.public_ip_address))
@@ -53,7 +54,8 @@ def term_ec2():
 
 
 if args.list == True:
-    get_instances()
+    # get_instances()
+    get_ec2_all()
 
 if args.start != None:
     start_ec2(args.start)
